@@ -1,32 +1,31 @@
 local ffi = require("ffi")
 
-#include <inttypes.h>
-#include <sys/types.h>
-#include <stdarg.h>
-#include <sys/uio.h>
-#include <syslog.h>
+--#include <syslog.h>
 
-#include "sd-id128.h"
-#include "_sd-common.h"
+require ("sd-id128")
 
-/* Journal APIs. See sd-journal(3) for more information. */
 
-_SD_BEGIN_DECLARATIONS;
+-- Journal APIs. See sd-journal(3) for more information. */
 
+ffi.cdef[[
 /* Write to daemon */
-int sd_journal_print(int priority, const char *format, ...) _sd_printf_(2, 3);
-int sd_journal_printv(int priority, const char *format, va_list ap) _sd_printf_(2, 0);
-int sd_journal_send(const char *format, ...) _sd_printf_(1, 0) _sd_sentinel_;
+int sd_journal_print(int priority, const char *format, ...);
+int sd_journal_printv(int priority, const char *format, va_list ap) ;
+int sd_journal_send(const char *format, ...) ;
 int sd_journal_sendv(const struct iovec *iov, int n);
 int sd_journal_perror(const char *message);
+]]
 
+ffi.cdef[[
 /* Used by the macros below. You probably don't want to call this directly. */
-int sd_journal_print_with_location(int priority, const char *file, const char *line, const char *func, const char *format, ...) _sd_printf_(5, 6);
-int sd_journal_printv_with_location(int priority, const char *file, const char *line, const char *func, const char *format, va_list ap) _sd_printf_(5, 0);
-int sd_journal_send_with_location(const char *file, const char *line, const char *func, const char *format, ...) _sd_printf_(4, 0) _sd_sentinel_;
+int sd_journal_print_with_location(int priority, const char *file, const char *line, const char *func, const char *format, ...) ;
+int sd_journal_printv_with_location(int priority, const char *file, const char *line, const char *func, const char *format, va_list ap) ;
+int sd_journal_send_with_location(const char *file, const char *line, const char *func, const char *format, ...);
 int sd_journal_sendv_with_location(const char *file, const char *line, const char *func, const struct iovec *iov, int n);
 int sd_journal_perror_with_location(const char *file, const char *line, const char *func, const char *message);
+]]
 
+--[[
 /* implicitly add code location to messages sent, if this is enabled */
 #ifndef SD_JOURNAL_SUPPRESS_LOCATION
 
@@ -37,13 +36,19 @@ int sd_journal_perror_with_location(const char *file, const char *line, const ch
 #define sd_journal_perror(message) sd_journal_perror_with_location("CODE_FILE=" __FILE__, "CODE_LINE=" _SD_STRINGIFY(__LINE__), __func__, message)
 
 #endif
+--]]
 
+ffi.cdef[[
 int sd_journal_stream_fd(const char *identifier, int priority, int level_prefix);
+]]
 
+ffi.cdef[[
 /* Browse journal stream */
 
 typedef struct sd_journal sd_journal;
+]]
 
+ffi.cdef[[
 /* Open flags */
 enum {
         SD_JOURNAL_LOCAL_ONLY = 1,
@@ -60,7 +65,9 @@ enum {
         SD_JOURNAL_APPEND,
         SD_JOURNAL_INVALIDATE
 };
+]]
 
+ffi.cdef[[
 int sd_journal_open(sd_journal **ret, int flags);
 int sd_journal_open_directory(sd_journal **ret, const char *path, int flags);
 int sd_journal_open_files(sd_journal **ret, const char **paths, int flags);
@@ -115,7 +122,9 @@ int sd_journal_reliable_fd(sd_journal *j);
 
 int sd_journal_get_catalog(sd_journal *j, char **text);
 int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **text);
+]]
 
+--[[
 /* the inverse condition avoids ambiguity of danling 'else' after the macro */
 #define SD_JOURNAL_FOREACH(j)                                           \
         if (sd_journal_seek_head(j) < 0) { }                            \
@@ -131,4 +140,4 @@ int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **text);
 
 #define SD_JOURNAL_FOREACH_UNIQUE(j, data, l)                           \
         for (sd_journal_restart_unique(j); sd_journal_enumerate_unique((j), &(data), &(l)) > 0; )
-
+--]]

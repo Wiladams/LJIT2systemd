@@ -5,6 +5,7 @@ local ffi = require("ffi")
 require("sd-bus")
 require("sd-daemon")
 require("sd-event")
+require("sd-journal")
 require("sd-login")
 
 
