@@ -2,7 +2,9 @@
 
 --[[
 	Test using SDJournal as a cursor over the journal entries
-	and printing the fields of each entry individually
+
+	In this case, we want to try the various cursor positioning
+	operations to ensure the work correctly.
 --]]
 package.path = package.path..";../src/?.lua"
 

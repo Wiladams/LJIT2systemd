@@ -70,7 +70,10 @@ int sd_session_get_remote_user(const char *session, char **remote_user);
 int sd_session_get_tty(const char *session, char **display);
 
 int sd_session_get_vt(const char *session, unsigned *vtnr);
+]]
 
+-- seat specifics
+ffi.cdef[[
 int sd_seat_get_active(const char *seat, char **session, uid_t *uid);
 
 int sd_seat_get_sessions(const char *seat, char ***sessions, uid_t **uid, unsigned *n_uids);
@@ -80,7 +83,10 @@ int sd_seat_can_multi_session(const char *seat);
 int sd_seat_can_tty(const char *seat);
 
 int sd_seat_can_graphical(const char *seat);
+]]
 
+-- get a hold of various lists
+ffi.cdef[[
 int sd_machine_get_class(const char *machine, char **clazz);
 
 int sd_machine_get_ifindices(const char *machine, int **ifindices);
