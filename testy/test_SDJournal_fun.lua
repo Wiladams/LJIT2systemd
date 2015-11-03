@@ -6,7 +6,7 @@
 package.path = package.path..";../src/?.lua"
 
 local SDJournal = require("SDJournal")
-local sysd = require("systemd")
+local sysd = require("systemd_ffi")
 local fun = require("fun")()
 
 -- Feed this routine a table with the names of the fields
@@ -28,6 +28,9 @@ local function  printTable(entry)
 	each(print, entry)
 end
 
+local function convertCursorToTable(cursor)
+	return cursor:currentValue();
+end
 
 
 local function printJournalFields(selector, flags)
@@ -35,9 +38,9 @@ local function printJournalFields(selector, flags)
 	local jnl1 = SDJournal();
 
 	if selector then
-		each(printTable, map(selector, map(function(entry) return entry:currentValue() end, jnl1:entries())))
+		each(printTable, map(selector, map(convertCursorToTable, jnl1:entries())))
 	else
-		each(printTable, map(function(entry) return entry:currentValue() end, jnl1:entries()))	
+		each(printTable, map(convertCursorToTable, jnl1:entries()))	
 	end
 end
 

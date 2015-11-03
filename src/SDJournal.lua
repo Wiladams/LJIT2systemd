@@ -1,7 +1,7 @@
 --SDJournal.lua
 
 local ffi = require("ffi")
-local sysd = require("systemd")
+local sysd = require("systemd_ffi")
 local libc = require("libc")
 
 local SDJournal = {}

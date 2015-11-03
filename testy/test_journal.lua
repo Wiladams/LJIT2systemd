@@ -3,7 +3,7 @@
 package.path = package.path..";../src/?.lua"
 
 local ffi = require("ffi")
-local sysd = require("systemd")
+local sysd = require("systemd_ffi")
 
 local jp = ffi.new("sd_journal *[1]")
 local flags = 0;

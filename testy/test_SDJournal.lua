@@ -7,7 +7,7 @@
 package.path = package.path..";../src/?.lua"
 
 local SDJournal = require("SDJournal")
-local sysd = require("systemd")
+local sysd = require("systemd_ffi")
 
 
 local function printFields(entry)
