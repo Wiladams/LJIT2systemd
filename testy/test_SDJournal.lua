@@ -1,29 +1,33 @@
 -- test_journal.lua
+
 --[[
-	Note: This iteration works, but it seems to not print
-	all the entries in a journal.  Perhaps resource exhaustion
+	Test using SDJournal as a cursor over the journal entries
+	and printing the fields of each entry individually
 --]]
 package.path = package.path..";../src/?.lua"
 
 local SDJournal = require("SDJournal")
+local sysd = require("systemd")
 
-local jnl1 = SDJournal();
 
 local function printFields(entry)
 --	print('    ', entry:getField("_HOSTNAME"))
 --	print('    ', entry:getField("MESSAGE"))
 
 	for fldidx, fieldname, fielddata, fieldlen in entry:fields() do
-		print('    ',fieldname, fielddata, fieldlen)
+		print('    ',fieldname, entry:getField(fieldname))
 	end
-
-	--print(collectgarbage('count'))
 end
 
-for entryidx, entry in jnl1:entries() do
-	print(entryidx, entry)
-	printFields(entry)
-	
-	--collectgarbage()
-	--print(collectgarbage('count'))
+local function printJournalFields(flags)
+	flags = flags or 0
+	local jnl1 = SDJournal();
+
+	for entryidx, entry in jnl1:entries() do
+		print(entryidx, entry)
+		printFields(entry)
+	end
 end
+
+print("SD_JOURNAL_CURRENT_USER: ", sysd.SD_JOURNAL_CURRENT_USER)
+printJournalFields(sysd.SD_JOURNAL_CURRENT_USER)

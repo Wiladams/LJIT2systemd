@@ -43,12 +43,23 @@ function SDJournal.getField(self, name)
 	local datap = ffi.new("char *[1]")
 	local len = ffi.new("size_t [1]")
 	local res = sysd.sd_journal_get_data(self.Handle, name, ffi.cast("const void **",datap), len);
---print("SDJournal.getField(): ", res)
+
+
 	if res ~= 0 then 
 		return nil 
 	end
 
-	return ffi.string(datap[0], len[0])
+	-- find where the '=' sign is, and take everything
+	-- after that.
+	datap = datap[0]
+	len = len[0]
+	local eqlptr = ffi.C.strchr(datap, string.byte('='))
+	local namelen = eqlptr - datap
+
+	eqlptr = eqlptr + 1;
+	local valuelen = len - namelen-1;
+
+	return ffi.string(eqlptr, valuelen)
 end
 
 --[[
@@ -61,7 +72,7 @@ function SDJournal.entries(self)
 	local function entry_gen(param, state)
 		local res = sysd.sd_journal_next(param.Handle);
 		if res <= 0 then
-			print("SDJournal.entries() - END: ", res)
+			--print("SDJournal.entries() - END: ", res)
 			return nil
 		end
 		sysd.sd_journal_restart_data(param.Handle)
@@ -78,7 +89,7 @@ function SDJournal.fields(self)
 
 		local res = sysd.sd_journal_enumerate_data(self.Handle, ffi.cast("const void **", datap), len);
 		if res <= 0 then 
-			print("SDJournal.fields() - END: ", res)
+			--print("SDJournal.fields() - END: ", res)
 			return nil 
 		end
 
@@ -93,6 +104,15 @@ function SDJournal.fields(self)
 	end
 
 	return field_gen, self, 0
+end
+
+function SDJournal.currentValue(self)
+	local res = {}
+	for _, fieldname, dataptr, len in self:fields() do
+		res[fieldname] = self:getField(fieldname);
+	end
+
+	return res;
 end
 
 return SDJournal
