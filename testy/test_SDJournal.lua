@@ -17,6 +17,7 @@ end
 
 for entryidx, entry in jnl1:entries() do
 	print(entryidx, entry)
-	print(entry:getField("_HOSTNAME"))
---	printFields(entry)
+--	print(entry:getField("_HOSTNAME"))
+	print(entry:getField("MESSAGE"))
+	--printFields(entry)
 end

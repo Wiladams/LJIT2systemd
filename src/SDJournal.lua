@@ -43,7 +43,9 @@ function SDJournal.getField(self, name)
 	local len = ffi.new("size_t [1]")
 	local res = sysd.sd_journal_get_data(self.Handle, name, ffi.cast("const void **",datap), len);
 
-	if res ~= 0 then return nil end
+	if res ~= 0 then 
+		return nil 
+	end
 
 	return ffi.string(datap[0], len[0])
 end
@@ -58,6 +60,7 @@ function SDJournal.entries(self)
 	local function entry_gen(param, state)
 		local res = sysd.sd_journal_next(param.Handle);
 		if res <= 0 then
+			print("SDJournal.entries() - END: ", res)
 			return nil
 		end
 		sysd.sd_journal_restart_data(param.Handle)
@@ -73,7 +76,10 @@ function SDJournal.fields(self)
 		local len = ffi.new("size_t[1]")
 
 		local res = sysd.sd_journal_enumerate_data(self.Handle, ffi.cast("const void **", datap), len);
-		if res <= 0 then return nil end
+		if res <= 0 then 
+			print("SDJournal.fields() - END: ", res)
+			return nil 
+		end
 
 		local eqlptr = ffi.C.strchr(datap[0], string.byte('='))
 		local namelen = eqlptr - datap[0]
