@@ -32,17 +32,18 @@ function SDJournal.new(self, flags)
 	if res ~= 0 then
 		return nil, res;
 	end
+	jp = jp[0];
 
-	ffi.gc(jp[0], sysd.sd_journal_close)
+	ffi.gc(jp, sysd.sd_journal_close)
 
-	return self:init(jp[0])
+	return self:init(jp)
 end
 
 function SDJournal.getField(self, name)
 	local datap = ffi.new("char *[1]")
 	local len = ffi.new("size_t [1]")
 	local res = sysd.sd_journal_get_data(self.Handle, name, ffi.cast("const void **",datap), len);
-
+--print("SDJournal.getField(): ", res)
 	if res ~= 0 then 
 		return nil 
 	end
@@ -81,11 +82,14 @@ function SDJournal.fields(self)
 			return nil 
 		end
 
-		local eqlptr = ffi.C.strchr(datap[0], string.byte('='))
-		local namelen = eqlptr - datap[0]
-		local fieldname = ffi.string(datap[0], namelen)
+		datap = datap[0];
+		len = len[0];
 
-		return res, fieldname, datap[0], tonumber(len[0])
+		local eqlptr = ffi.C.strchr(datap, string.byte('='))
+		local namelen = eqlptr - datap
+		local fieldname = ffi.string(datap, namelen)
+
+		return res, fieldname, datap, tonumber(len)
 	end
 
 	return field_gen, self, 0
