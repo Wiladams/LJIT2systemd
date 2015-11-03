@@ -39,6 +39,78 @@ function SDJournal.new(self, flags)
 	return self:init(jp)
 end
 
+function SDJournal.bytesUsed(self)
+	local bytes = ffi.new("uint64_t[1]")
+	local res = sysd.sd_journal_get_usage(self.Handle, bytes);
+
+	if res ~= 0 then return false end
+
+	bytes = bytes[0]
+	
+	return bytes
+end
+
+--[[
+int sd_journal_previous(sd_journal *j);
+int sd_journal_next(sd_journal *j);
+int sd_journal_get_cursor(sd_journal *j, char **cursor);
+int sd_journal_test_cursor(sd_journal *j, const char *cursor);
+int sd_journal_seek_head(sd_journal *j);
+int sd_journal_seek_tail(sd_journal *j);
+int sd_journal_seek_cursor(sd_journal *j, const char *cursor);
+
+--]]
+function SDJournal.seekHead(self)
+	local res = sysd.sd_journal_seek_head(self.Handle);
+	if res ~= 0 then return false end
+
+	return true;
+end
+
+function SDJournal.seekTail(self)
+	local res = sysd.sd_journal_seek_tail(self.Handle);
+	if res ~= 0 then return false end
+
+	return true;
+end
+
+function SDJournal.seekLabel(self, label)
+	local res = sysd.sd_journal_seek_cursor(self.Handle, label);
+	if res ~= 0 then return false end
+
+	return true;
+end
+
+
+function SDJournal.next(self)
+	local res = sysd.sd_journal_next(self.Handle)
+	if res ~= 0 then return false end
+
+	return true;
+end
+
+function SDJournal.previous(self)
+	local res = sysd.sd_journal_previous(self.Handle)
+	if res ~= 0 then return false end
+
+	return true;
+end
+
+function SDJournal.positionLabel(self)
+	local pLabel = ffi.new("char *[1]");
+	local res = sysd.sd_journal_get_cursor(self.Handle, pLabel);
+	if res ~= 0 then
+		return nil;
+	end
+
+	return ffi.string(pLabel[0])
+end
+
+
+
+
+
+
 function SDJournal.getField(self, name)
 	local datap = ffi.new("char *[1]")
 	local len = ffi.new("size_t [1]")
