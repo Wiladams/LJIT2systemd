@@ -1,11 +1,5 @@
 local ffi = require("ffi")
 
---#include <sys/types.h>
---#include <sys/signalfd.h>
---#include <sys/epoll.h>
---#include <inttypes.h>
---#include <signal.h>
-
 --#include "_sd-common.h"
 
 require("siginfo")
