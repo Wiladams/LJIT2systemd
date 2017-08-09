@@ -44,10 +44,13 @@ local function printJournalFields(selector, flags)
 	end
 end
 
+-- print all fields, but filter the kind of journal being looked at
 --printJournalFields(nil, sysd.SD_JOURNAL_CURRENT_USER)
 --printJournalFields(nil, sysd.SD_JOURNAL_SYSTEM)
 
+-- printing specific fields
 --printJournalFields(selection({"_HOSTNAME", "SYSLOG_FACILITY"}));
 printJournalFields(selection({"_EXE", "_CMDLINE"}));
 
+-- to print all the fields available per entry
 --printJournalFields();
